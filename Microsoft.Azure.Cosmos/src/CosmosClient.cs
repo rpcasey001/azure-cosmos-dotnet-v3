@@ -10,6 +10,9 @@ namespace Microsoft.Azure.Cosmos
     using Microsoft.Azure.Cosmos.Query;
     using Microsoft.Azure.Documents;
     using System.Text;
+    using System.Globalization;
+    using System.Diagnostics;
+    using System.Net;
 
     /// <summary>
     /// Provides a client-side logical representation of the Azure Cosmos DB database account.
@@ -71,11 +74,33 @@ namespace Microsoft.Azure.Cosmos
     {
         private Lazy<CosmosOffers> offerSet;
 
+        internal bool isFast;
+        internal StringHMACSHA256Hash authKeyHashFunction;
+        internal Documents.Rntbd.TransportClient transportClient;
+        internal volatile int replicaIndexUsed = 0;
+
         static CosmosClient()
         {
             HttpConstants.Versions.CurrentVersion = HttpConstants.Versions.v2018_12_31;
             HttpConstants.Versions.CurrentVersionUTF8 = Encoding.UTF8.GetBytes(HttpConstants.Versions.CurrentVersion);
         }
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        public CosmosClient(
+            string accountEndPoint,
+            string accountKey,
+            bool isFast)
+            : this(accountEndPoint, accountKey)
+        {
+            this.isFast = isFast;
+            if (isFast)
+            {
+                this.transportClient = new Documents.Rntbd.TransportClient(new Documents.Rntbd.TransportClient.Options(TimeSpan.FromSeconds(60)));
+                this.authKeyHashFunction = new StringHMACSHA256Hash(accountKey);
+            }
+        }
+
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         /// <summary>
         /// Create a new CosmosClient with the connection

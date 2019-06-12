@@ -109,10 +109,15 @@ namespace Microsoft.Azure.Cosmos.Routing
             int batchSize = GatewayAddressCache.DefaultBatchSize;
 
 #if !(NETSTANDARD15 || NETSTANDARD16)
-            int userSpecifiedBatchSize = 0;
-            if (int.TryParse(System.Configuration.ConfigurationManager.AppSettings[GatewayAddressCache.AddressResolutionBatchSize], out userSpecifiedBatchSize))
+            // Entry assembly is null when a native host is used for execution of
+            // this .net assembly and the configuration system does not initialize in such a setup.
+            if (System.Reflection.Assembly.GetEntryAssembly() != null)
             {
-                batchSize = userSpecifiedBatchSize;
+                int userSpecifiedBatchSize = 0;
+                if (int.TryParse(System.Configuration.ConfigurationManager.AppSettings[GatewayAddressCache.AddressResolutionBatchSize], out userSpecifiedBatchSize))
+                {
+                    batchSize = userSpecifiedBatchSize;
+                }
             }
 #endif
 

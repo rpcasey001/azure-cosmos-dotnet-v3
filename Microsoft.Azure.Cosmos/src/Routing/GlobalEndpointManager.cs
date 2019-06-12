@@ -55,12 +55,17 @@ namespace Microsoft.Azure.Cosmos.Routing
             this.isRefreshing = false;
             this.refreshLock = new object();
 #if !(NETSTANDARD15 || NETSTANDARD16)
-            string backgroundRefreshLocationTimeIntervalInMSConfig = System.Configuration.ConfigurationManager.AppSettings[GlobalEndpointManager.BackgroundRefreshLocationTimeIntervalInMS];
-            if (!string.IsNullOrEmpty(backgroundRefreshLocationTimeIntervalInMSConfig))
+            // Entry assembly is null when a native host is used for execution of
+            // this .net assembly and the configuration system does not initialize in such a setup.
+            if (System.Reflection.Assembly.GetEntryAssembly() != null)
             {
-                if (!int.TryParse(backgroundRefreshLocationTimeIntervalInMSConfig, out this.backgroundRefreshLocationTimeIntervalInMS))
+                string backgroundRefreshLocationTimeIntervalInMSConfig = System.Configuration.ConfigurationManager.AppSettings[GlobalEndpointManager.BackgroundRefreshLocationTimeIntervalInMS];
+                if (!string.IsNullOrEmpty(backgroundRefreshLocationTimeIntervalInMSConfig))
                 {
-                    this.backgroundRefreshLocationTimeIntervalInMS = GlobalEndpointManager.DefaultBackgroundRefreshLocationTimeIntervalInMS;
+                    if (!int.TryParse(backgroundRefreshLocationTimeIntervalInMSConfig, out this.backgroundRefreshLocationTimeIntervalInMS))
+                    {
+                        this.backgroundRefreshLocationTimeIntervalInMS = GlobalEndpointManager.DefaultBackgroundRefreshLocationTimeIntervalInMS;
+                    }
                 }
             }
 #endif

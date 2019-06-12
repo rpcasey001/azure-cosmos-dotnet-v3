@@ -53,18 +53,23 @@ namespace Microsoft.Azure.Cosmos.Routing
             this.unavailableLocationsExpirationTime = TimeSpan.FromSeconds(LocationCache.DefaultUnavailableLocationsExpirationTimeInSeconds);
 
 #if !(NETSTANDARD15 || NETSTANDARD16)
-            string unavailableLocationsExpirationTimeInSecondsConfig = System.Configuration.ConfigurationManager.AppSettings[LocationCache.UnavailableLocationsExpirationTimeInSeconds];
-            if (!string.IsNullOrEmpty(unavailableLocationsExpirationTimeInSecondsConfig))
+            // Entry assembly is null when a native host is used for execution of
+            // this .net assembly and the configuration system does not initialize in such a setup.
+            if (System.Reflection.Assembly.GetEntryAssembly() != null)
             {
-                int unavailableLocationsExpirationTimeinSecondsConfigValue;
+                string unavailableLocationsExpirationTimeInSecondsConfig = System.Configuration.ConfigurationManager.AppSettings[LocationCache.UnavailableLocationsExpirationTimeInSeconds];
+                if (!string.IsNullOrEmpty(unavailableLocationsExpirationTimeInSecondsConfig))
+                {
+                    int unavailableLocationsExpirationTimeinSecondsConfigValue;
 
-                if (!int.TryParse(unavailableLocationsExpirationTimeInSecondsConfig, out unavailableLocationsExpirationTimeinSecondsConfigValue))
-                {
-                    this.unavailableLocationsExpirationTime = TimeSpan.FromSeconds(LocationCache.DefaultUnavailableLocationsExpirationTimeInSeconds);
-                }
-                else
-                {
-                    this.unavailableLocationsExpirationTime = TimeSpan.FromSeconds(unavailableLocationsExpirationTimeinSecondsConfigValue);
+                    if (!int.TryParse(unavailableLocationsExpirationTimeInSecondsConfig, out unavailableLocationsExpirationTimeinSecondsConfigValue))
+                    {
+                        this.unavailableLocationsExpirationTime = TimeSpan.FromSeconds(LocationCache.DefaultUnavailableLocationsExpirationTimeInSeconds);
+                    }
+                    else
+                    {
+                        this.unavailableLocationsExpirationTime = TimeSpan.FromSeconds(unavailableLocationsExpirationTimeinSecondsConfigValue);
+                    }
                 }
             }
 #endif

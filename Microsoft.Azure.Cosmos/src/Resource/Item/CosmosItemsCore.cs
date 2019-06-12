@@ -6,6 +6,8 @@ namespace Microsoft.Azure.Cosmos
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Globalization;
     using System.IO;
     using System.Net;
     using System.Text;
@@ -82,13 +84,58 @@ namespace Microsoft.Azure.Cosmos
                     CosmosItemRequestOptions requestOptions = null,
                     CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.ProcessItemStreamAsync(
-                partitionKey,
-                id,
-                null,
+
+            CosmosClient client = this.clientContext.Client;
+            if (client.isFast)
+            {
+                return ReadFast(id, client);
+            }
+            else
+            {
+                return this.ProcessItemStreamAsync(
+                    partitionKey,
+                    id,
+                    null,
+                    OperationType.Read,
+                    requestOptions,
+                    cancellationToken);
+            }
+        }
+
+        private async Task<CosmosResponseMessage> ReadFast(string id, CosmosClient client)
+        {
+            string resourceId = string.Format("dbs/{0}/colls/{1}/docs/{2}", this.container.Database.Id, this.container.Id, id);
+            var headers = new Documents.Collections.StringKeyValueCollection();
+            headers[HttpConstants.HttpHeaders.XDate] = DateTime.UtcNow.ToString("r", CultureInfo.InvariantCulture);
+            headers[HttpConstants.HttpHeaders.Authorization] = AuthorizationHelper.GenerateKeyAuthorizationSignature("get", resourceId, "docs", headers, client.authKeyHashFunction);
+            headers[HttpConstants.HttpHeaders.PartitionKey] = new PartitionKey(id).ToString(); // ["<id>"]
+
+            DocumentServiceRequest req = DocumentServiceRequest.Create(
                 OperationType.Read,
-                requestOptions,
-                cancellationToken);
+                ResourceType.Document,
+                resourceId,
+                null,
+                AuthorizationTokenType.PrimaryMasterKey,
+                headers);
+
+            PartitionAddressInformation addressInformation = await this.clientContext.DocumentClient.AddressResolver.ResolveAsync(req, false, CancellationToken.None);
+
+            Trace.CorrelationManager.ActivityId = Guid.NewGuid();
+
+            Interlocked.Increment(ref client.replicaIndexUsed);
+            Uri replicaUri = new Uri(addressInformation.AllAddresses[client.replicaIndexUsed % addressInformation.AllAddresses.Length].PhysicalUri);
+
+            StoreResponse storeResponse = await client.transportClient.InvokeResourceOperationAsync(replicaUri, req);
+
+            CosmosResponseMessage responseMessage = new CosmosResponseMessage(storeResponse.StatusCode);
+
+            if ((int)storeResponse.StatusCode >= 200 && (int)storeResponse.StatusCode <= 299)
+            {
+                int contentLength = (int)storeResponse.ResponseBody.Length;
+                responseMessage.Content = storeResponse.ResponseBody;
+            }
+
+            return responseMessage;
         }
 
         public override Task<CosmosItemResponse<T>> ReadItemAsync<T>(
