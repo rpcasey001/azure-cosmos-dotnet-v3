@@ -387,7 +387,10 @@ namespace Microsoft.Azure.Cosmos
                 requestOptions);
         }
 
-        public override IOrderedQueryable<T> CreateItemQuery<T>(object partitionKey = null, bool allowSynchronousQueryExecution = false, QueryRequestOptions requestOptions = null)
+        public override IOrderedQueryable<T> CreateItemQuery<T>(
+            object partitionKey = null, 
+            bool allowSynchronousQueryExecution = false, 
+            QueryRequestOptions requestOptions = null)
         {
             requestOptions = requestOptions != null ? requestOptions : new QueryRequestOptions();
             if (partitionKey != null)
@@ -399,7 +402,13 @@ namespace Microsoft.Azure.Cosmos
                 requestOptions.EnableCrossPartitionQuery = true;
             }
 
-            return new CosmosLinqQuery<T>(this, this.ClientContext.CosmosSerializer, (CosmosQueryClientCore)this.queryClient, requestOptions, allowSynchronousQueryExecution);
+            return new CosmosLinqQuery<T>(
+                this.LinkUri, 
+                ResourceType.Document,
+                this.ClientContext.CosmosSerializer, 
+                (CosmosQueryClientCore)this.queryClient, 
+                requestOptions, 
+                allowSynchronousQueryExecution);
         }
 
         public override ChangeFeedProcessorBuilder CreateChangeFeedProcessorBuilder<T>(

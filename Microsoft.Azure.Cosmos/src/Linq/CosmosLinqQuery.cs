@@ -11,7 +11,6 @@ namespace Microsoft.Azure.Cosmos.Linq
     using System.Linq.Expressions;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Azure.Cosmos.Linq;
     using Microsoft.Azure.Cosmos.Query;
     using Microsoft.Azure.Documents;
     using Newtonsoft.Json;
@@ -26,28 +25,33 @@ namespace Microsoft.Azure.Cosmos.Linq
         private readonly CosmosLinqQueryProvider queryProvider;
         private readonly Guid correlatedActivityId;
 
-        private readonly ContainerCore container;
+        private readonly Uri resourceUri;
+        private readonly ResourceType resourceType;
         private readonly CosmosQueryClientCore queryClient;
         private readonly CosmosJsonSerializer cosmosJsonSerializer;
         private readonly QueryRequestOptions cosmosQueryRequestOptions;
         private readonly bool allowSynchronousQueryExecution = false;
 
         public CosmosLinqQuery(
-           ContainerCore container,
+           Uri resourceUri,
+           ResourceType resourceType,
            CosmosJsonSerializer cosmosJsonSerializer,
            CosmosQueryClientCore queryClient,
            QueryRequestOptions cosmosQueryRequestOptions,
            Expression expression,
            bool allowSynchronousQueryExecution)
         {
-            this.container = container ?? throw new ArgumentNullException(nameof(container));
+            this.resourceUri = resourceUri ?? throw new ArgumentNullException(nameof(resourceUri));
             this.cosmosJsonSerializer = cosmosJsonSerializer ?? throw new ArgumentNullException(nameof(cosmosJsonSerializer));
             this.queryClient = queryClient ?? throw new ArgumentNullException(nameof(queryClient));
+
+            this.resourceType = resourceType;
             this.cosmosQueryRequestOptions = cosmosQueryRequestOptions;
             this.expression = expression ?? Expression.Constant(this);
             this.allowSynchronousQueryExecution = allowSynchronousQueryExecution;
             this.queryProvider = new CosmosLinqQueryProvider(
-              container,
+              resourceUri,
+              resourceType,
               cosmosJsonSerializer,
               queryClient,
               cosmosQueryRequestOptions,
@@ -57,13 +61,15 @@ namespace Microsoft.Azure.Cosmos.Linq
         }
 
         public CosmosLinqQuery(
-          ContainerCore container,
+          Uri resourceUri,
+          ResourceType resourceType,
           CosmosJsonSerializer cosmosJsonSerializer,
           CosmosQueryClientCore queryClient,
           QueryRequestOptions cosmosQueryRequestOptions,
           bool allowSynchronousQueryExecution)
             : this(
-              container,
+              resourceUri,
+              resourceType,
               cosmosJsonSerializer,
               queryClient,
               cosmosQueryRequestOptions,
@@ -141,7 +147,7 @@ namespace Microsoft.Azure.Cosmos.Linq
                 return JsonConvert.SerializeObject(querySpec);
             }
 
-            return container.LinkUri.ToString();
+            return resourceUri.ToString();
         }
 
         public string ToSqlQueryText()
@@ -152,7 +158,7 @@ namespace Microsoft.Azure.Cosmos.Linq
                 return (querySpec.QueryText);
             }
 
-            return container.LinkUri.ToString();
+            return resourceUri.ToString();
         }
 
         public void Dispose()
@@ -174,12 +180,12 @@ namespace Microsoft.Azure.Cosmos.Linq
         {
             CosmosQueryExecutionContext cosmosQueryExecution = new CosmosQueryExecutionContextFactory(
                 client: this.queryClient,
-                resourceTypeEnum: ResourceType.Document,
+                resourceTypeEnum: this.resourceType,
                 operationType: OperationType.Query,
                 resourceType: typeof(T),
                 sqlQuerySpec: DocumentQueryEvaluator.Evaluate(expression),
                 queryRequestOptions: this.cosmosQueryRequestOptions,
-                resourceLink: this.container.LinkUri,
+                resourceLink: this.resourceUri,
                 isContinuationExpected: false,
                 allowNonValueAggregateQuery: true,
                 correlatedActivityId: Guid.NewGuid());
