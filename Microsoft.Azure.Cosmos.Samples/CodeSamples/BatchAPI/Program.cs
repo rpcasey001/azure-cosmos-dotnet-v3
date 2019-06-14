@@ -7,6 +7,8 @@ namespace BatchAPI
     using Microsoft.Extensions.Configuration;
     using Newtonsoft.Json;
     using System;
+    using System.IO;
+    using System.Text;
     using System.Threading.Tasks;
 
     class Program
@@ -185,7 +187,120 @@ namespace BatchAPI
 
         private static async void ExecuteCrudStreamAsync(CosmosContainer container)
         {
+            string partitionKeyValue = Guid.NewGuid().ToString();
+            {
+                // Batch with cruds stream API 
+                SalesOrder order1 = Program.GetSalesOrderSample("SalesOrder200", partitionKeyValue);
+                SalesOrder order2 = Program.GetSalesOrderSample("SalesOrder201", partitionKeyValue);
+                SalesOrder order3 = Program.GetSalesOrderSample("SalesOrder202", partitionKeyValue);
+                SalesOrder order4 = Program.GetSalesOrderSample("SalesOrder203", partitionKeyValue);
+                SalesOrder order1Updated = Program.GetSalesOrderSample("SalesOrder200", partitionKeyValue);
+                order1Updated.ShippedDate = DateTime.Now;
+                SalesOrder order2Updated = Program.GetSalesOrderSample("SalesOrder201", partitionKeyValue);
+                order2Updated.TaxAmount = 1;
+                CosmosBatchResponse batchResponse = await container.CreateBatch(new PartitionKey(partitionKeyValue))
+                    .CreateItemStream(Program.ToStream<SalesOrder>(order1))
+                    .CreateItemStream(Program.ToStream<SalesOrder>(order2))
+                    .CreateItemStream(Program.ToStream<SalesOrder>(order3))
+                    .ReplaceItemStream(order1.Id, Program.ToStream<SalesOrder>(order1Updated))
+                    .ReplaceItemStream(order2.Id, Program.ToStream<SalesOrder>(order2Updated))
+                    .UpsertItemStream(Program.ToStream<SalesOrder>(order4))
+                    .DeleteItem("SalesOrder202")
+                    .ExecuteAsync();
 
+                Console.WriteLine(
+                    "Batch Response for create, StatusCode=[" +
+                    batchResponse.StatusCode + "] Count=[" +
+                    batchResponse.Count + "]");
+            }
+
+            {
+                // Batch with creates using stream API 
+                SalesOrder order1 = Program.GetSalesOrderSample("SalesOrder300", partitionKeyValue);
+                SalesOrder order2 = Program.GetSalesOrderSample("SalesOrder301", partitionKeyValue);
+                SalesOrder order3 = Program.GetSalesOrderSample("SalesOrder302", partitionKeyValue);
+                SalesOrder order4 = Program.GetSalesOrderSample("SalesOrder303", partitionKeyValue);
+
+                // Create batch and add operations
+                CosmosBatch batch = container.CreateBatch(new PartitionKey(partitionKeyValue));
+                batch.CreateItemStream(Program.ToStream<SalesOrder>(order1));
+                batch.CreateItemStream(Program.ToStream<SalesOrder>(order2));
+                batch.CreateItemStream(Program.ToStream<SalesOrder>(order3));
+                batch.CreateItemStream(Program.ToStream<SalesOrder>(order4));                   
+
+                // Execute the batch
+                CosmosBatchResponse batchResponse = await batch.ExecuteAsync();
+                Console.WriteLine(
+                    "Batch Response for create, StatusCode=[" +
+                    batchResponse.StatusCode + "] Count=[" +
+                    batchResponse.Count + "]");
+            }
+
+            {
+                // Batch with replaces using stream API 
+                SalesOrder order1Updated = Program.GetSalesOrderSample("SalesOrder300", partitionKeyValue);
+                SalesOrder order2Updated = Program.GetSalesOrderSample("SalesOrder301", partitionKeyValue);
+                SalesOrder order3Updated = Program.GetSalesOrderSample("SalesOrder302", partitionKeyValue);
+                SalesOrder order4Updated = Program.GetSalesOrderSample("SalesOrder303", partitionKeyValue);
+                order1Updated.PurchaseOrderNumber = "Order1";
+                order2Updated.ShippedDate = DateTime.Now;
+                order3Updated.SubTotal = 100;
+                order4Updated.TotalDue = 99;
+
+                // Create batch and add replace operations
+                CosmosBatch batch = container.CreateBatch(new PartitionKey(partitionKeyValue));
+                batch.ReplaceItemStream("SalesOrder300", Program.ToStream<SalesOrder>(order1Updated));
+                batch.ReplaceItemStream("SalesOrder301", Program.ToStream<SalesOrder>(order2Updated));
+                batch.ReplaceItemStream("SalesOrder302", Program.ToStream<SalesOrder>(order3Updated));
+                batch.ReplaceItemStream("SalesOrder303", Program.ToStream<SalesOrder>(order4Updated));
+
+                // Execute the batch
+                CosmosBatchResponse batchResponse = await batch.ExecuteAsync();
+                Console.WriteLine(
+                    "Batch Response for create, StatusCode=[" +
+                    batchResponse.StatusCode + "] Count=[" +
+                    batchResponse.Count + "]");
+            }
+
+            {
+                // Batch with creates using stream API 
+                SalesOrder order1 = Program.GetSalesOrderSample("SalesOrder400", partitionKeyValue);
+                SalesOrder order2 = Program.GetSalesOrderSample("SalesOrder401", partitionKeyValue);
+                SalesOrder order3 = Program.GetSalesOrderSample("SalesOrder402", partitionKeyValue);
+                SalesOrder order4 = Program.GetSalesOrderSample("SalesOrder403", partitionKeyValue);
+
+                // Create batch and add operations
+                CosmosBatch batch = container.CreateBatch(new PartitionKey(partitionKeyValue));
+                batch.UpsertItemStream(Program.ToStream<SalesOrder>(order1));
+                batch.UpsertItemStream(Program.ToStream<SalesOrder>(order2));
+                batch.UpsertItemStream(Program.ToStream<SalesOrder>(order3));
+                batch.UpsertItemStream(Program.ToStream<SalesOrder>(order4));
+
+                // Execute the batch
+                CosmosBatchResponse batchResponse = await batch.ExecuteAsync();
+                Console.WriteLine(
+                    "Batch Response for upserts, StatusCode=[" +
+                    batchResponse.StatusCode + "] Count=[" +
+                    batchResponse.Count + "]");
+            }
+        }
+
+        private static Stream ToStream<T>(T input)
+        {
+            MemoryStream streamPayload = new MemoryStream();
+            using (StreamWriter streamWriter = new StreamWriter(streamPayload, encoding: Encoding.Default, bufferSize: 1024, leaveOpen: true))
+            {
+                using (JsonWriter writer = new JsonTextWriter(streamWriter))
+                {
+                    writer.Formatting = Newtonsoft.Json.Formatting.None;
+                    Program.Serializer.Serialize(writer, input);
+                    writer.Flush();
+                    streamWriter.Flush();
+                }
+            }
+
+            streamPayload.Position = 0;
+            return streamPayload;
         }
 
         private static void ReadConfigs(out string endpoint, out string authKey, out string databaseName, out string containerId)
