@@ -1640,6 +1640,23 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
             }
         }
 
+        public static CosmosClient GetCosmosClient(ConnectionMode connectionMode = ConnectionMode.Direct)
+        {
+            string endPoint = ConfigurationManager.AppSettings["GatewayEndpoint"];
+            string masterKey = ConfigurationManager.AppSettings["MasterKey"];
+
+            CosmosClientBuilder builder = new CosmosClientBuilder(
+                endPoint,
+                masterKey);
+
+            if (connectionMode == ConnectionMode.Gateway)
+            {
+                builder.WithConnectionModeGateway();
+            }
+
+            return builder.Build();
+        }
+
         private class DisposableList : IDisposable
         {
             private readonly List<IDisposable> disposableList;
