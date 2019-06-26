@@ -600,7 +600,7 @@ namespace Microsoft.Azure.Cosmos
                 operationType: OperationType.Create,
                 requestOptions: requestOptions,
                 cosmosContainerCore: null,
-                partitionKey: null,
+                partitionKey: default(PartitionKey),
                 streamPayload: streamPayload,
                 requestEnricher: (httpRequestMessage) => httpRequestMessage.AddThroughputHeader(throughput),
                 cancellationToken: cancellationToken);
@@ -622,7 +622,7 @@ namespace Microsoft.Azure.Cosmos
                 operationType: OperationType.ReadFeed,
                 requestOptions: options,
                 cosmosContainerCore: null,
-                partitionKey: null,
+                partitionKey: default(PartitionKey),
                 streamPayload: null,
                 requestEnricher: request =>
                 {

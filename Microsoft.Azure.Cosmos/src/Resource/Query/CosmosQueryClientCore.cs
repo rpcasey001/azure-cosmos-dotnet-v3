@@ -106,7 +106,7 @@ namespace Microsoft.Azure.Cosmos
                 resourceType: resourceType,
                 operationType: operationType,
                 requestOptions: null,
-                partitionKey: null,
+                partitionKey: default(PartitionKey),
                 cosmosContainerCore: this.cosmosContainerCore,
                 streamPayload: this.clientContext.CosmosSerializer.ToStream<SqlQuerySpec>(sqlQuerySpec),
                 requestEnricher: requestEnricher,

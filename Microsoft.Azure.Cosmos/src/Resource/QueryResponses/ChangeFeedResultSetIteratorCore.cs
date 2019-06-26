@@ -171,7 +171,7 @@ namespace Microsoft.Azure.Cosmos
                     ChangeFeedRequestOptions.FillPartitionKeyRangeId(request, partitionKeyRangeId);
                 },
                 responseCreator: response => response,
-                partitionKey: null,
+                partitionKey: default(PartitionKey),
                 streamPayload: null,
                 cancellationToken: cancellationToken);
         }

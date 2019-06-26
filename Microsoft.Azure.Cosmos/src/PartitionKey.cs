@@ -8,7 +8,7 @@ namespace Microsoft.Azure.Cosmos
     /// <summary>
     /// Represents a partition key value in the Azure Cosmos DB service.
     /// </summary>
-    public sealed class PartitionKey
+    public struct PartitionKey
     {
         /// <summary>
         /// The returned object represents a partition key value that allows creating and accessing documents

@@ -53,7 +53,7 @@ namespace Microsoft.Azure.Cosmos
 
         public override Task<ItemResponse<T>> CreateItemAsync<T>(
             T item,
-            PartitionKey partitionKey = null,
+            PartitionKey partitionKey = default(PartitionKey),
             ItemRequestOptions requestOptions = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -122,7 +122,7 @@ namespace Microsoft.Azure.Cosmos
 
         public override Task<ItemResponse<T>> UpsertItemAsync<T>(
             T item,
-            PartitionKey partitionKey = null,
+            PartitionKey partitionKey = default(PartitionKey),
             ItemRequestOptions requestOptions = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -162,7 +162,7 @@ namespace Microsoft.Azure.Cosmos
         public override Task<ItemResponse<T>> ReplaceItemAsync<T>(
             T item,
             string id,
-            PartitionKey partitionKey = null,
+            PartitionKey partitionKey = default(PartitionKey),
             ItemRequestOptions requestOptions = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -420,7 +420,7 @@ namespace Microsoft.Azure.Cosmos
             CancellationToken cancellationToken)
         {
             IDocumentClientRetryPolicy requestRetryPolicy = null;
-            if (partitionKey == null)
+            if (partitionKey.Equals(default(PartitionKey)))
             {
                 requestRetryPolicy = new PartitionKeyMismatchRetryPolicy(await this.ClientContext.DocumentClient.GetCollectionCacheAsync(), requestRetryPolicy);
             }
@@ -459,7 +459,7 @@ namespace Microsoft.Azure.Cosmos
             bool extractPartitionKeyIfNeeded,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (extractPartitionKeyIfNeeded && partitionKey == null)
+            if (extractPartitionKeyIfNeeded && partitionKey.Equals(default(Cosmos.PartitionKey)))
             {
                 partitionKey = await this.GetPartitionKeyValueFromStreamAsync(streamPayload, cancellationToken);
             }
@@ -575,7 +575,7 @@ namespace Microsoft.Azure.Cosmos
                 },
                 responseCreator: response => response,
                 cosmosContainerCore: this,
-                partitionKey: null,
+                partitionKey: default(PartitionKey),
                 streamPayload: null,
                 cancellationToken: cancellationToken);
         }
@@ -599,7 +599,7 @@ namespace Microsoft.Azure.Cosmos
                 },
                 responseCreator: response => this.ClientContext.ResponseFactory.CreateResultSetQueryResponse<T>(response),
                 cosmosContainerCore: this,
-                partitionKey: null,
+                partitionKey: default(PartitionKey),
                 streamPayload: null,
                 cancellationToken: cancellationToken);
         }

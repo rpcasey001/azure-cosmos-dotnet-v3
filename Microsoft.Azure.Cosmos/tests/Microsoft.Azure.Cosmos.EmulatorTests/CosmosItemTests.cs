@@ -780,7 +780,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
 
             ResponseMessage response = await this.Container.ReadItemStreamAsync(
                 Guid.NewGuid().ToString(),
-                null,
+                default(Cosmos.PartitionKey),
                 itemRequestOptions);
 
             // Ideally it should be NotFound

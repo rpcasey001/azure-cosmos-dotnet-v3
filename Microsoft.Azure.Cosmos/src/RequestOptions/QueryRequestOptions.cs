@@ -216,7 +216,7 @@ namespace Microsoft.Azure.Cosmos
             return new FeedOptions()
             {
                 MaxDegreeOfParallelism = this.MaxConcurrency.HasValue ? this.MaxConcurrency.Value : 0,
-                PartitionKey = this.PartitionKey != null ? new Documents.PartitionKey(this.PartitionKey) : null,
+                PartitionKey = !this.PartitionKey.Equals(default(Cosmos.PartitionKey)) ? new Documents.PartitionKey(this.PartitionKey) : null,
                 ResponseContinuationTokenLimitInKb = this.ResponseContinuationTokenLimitInKb,
                 EnableScanInQuery = this.EnableScanInQuery,
                 EnableLowPrecisionOrderBy = this.EnableLowPrecisionOrderBy,
