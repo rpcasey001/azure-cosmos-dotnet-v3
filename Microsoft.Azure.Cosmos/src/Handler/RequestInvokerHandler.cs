@@ -134,7 +134,7 @@ namespace Microsoft.Azure.Cosmos.Handlers
                 Content = streamPayload
             };
 
-            if (partitionKey != null)
+            if (!partitionKey.Equals(default(Cosmos.PartitionKey)))
             {
                 if (cosmosContainerCore == null && Object.ReferenceEquals(partitionKey, Cosmos.PartitionKey.None))
                 {

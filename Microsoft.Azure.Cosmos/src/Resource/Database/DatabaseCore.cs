@@ -360,7 +360,7 @@ namespace Microsoft.Azure.Cosmos
                resourceType: ResourceType.Collection,
                operationType: OperationType.Create,
                cosmosContainerCore: null,
-               partitionKey: null,
+               partitionKey: default(Cosmos.PartitionKey),
                streamPayload: streamPayload,
                requestOptions: requestOptions,
                requestEnricher: (httpRequestMessage) => httpRequestMessage.AddThroughputHeader(throughput),
@@ -419,7 +419,7 @@ namespace Microsoft.Azure.Cosmos
                resourceType: ResourceType.Collection,
                operationType: OperationType.ReadFeed,
                cosmosContainerCore: null,
-               partitionKey: null,
+               partitionKey: default(Cosmos.PartitionKey),
                streamPayload: null,
                requestOptions: requestOptions,
                requestEnricher: request =>
@@ -445,7 +445,7 @@ namespace Microsoft.Azure.Cosmos
                 operationType: OperationType.ReadFeed,
                 requestOptions: options,
                 cosmosContainerCore: null,
-                partitionKey: null,
+                partitionKey: default(Cosmos.PartitionKey),
                 streamPayload: null,
                 requestEnricher: request =>
                 {
@@ -482,7 +482,7 @@ namespace Microsoft.Azure.Cosmos
               resourceType: resourceType,
               operationType: operationType,
               cosmosContainerCore: null,
-              partitionKey: null,
+              partitionKey: default(Cosmos.PartitionKey),
               streamPayload: streamPayload,
               requestOptions: requestOptions,
               requestEnricher: null,

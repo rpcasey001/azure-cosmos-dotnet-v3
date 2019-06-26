@@ -38,7 +38,7 @@ namespace Microsoft.Azure.Cosmos
             PartitionKey partitionKey,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (partitionKey == null)
+            if (partitionKey.Equals(default(Cosmos.PartitionKey)))
             {
                 throw new ArgumentNullException(nameof(partitionKey));
             }
@@ -92,7 +92,7 @@ namespace Microsoft.Azure.Cosmos
             PartitionKey partitionKey, 
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (partitionKey == null)
+            if (partitionKey.Equals(default(Cosmos.PartitionKey)))
             {
                 throw new ArgumentNullException(nameof(partitionKey));
             }
@@ -180,7 +180,7 @@ namespace Microsoft.Azure.Cosmos
                 },
                 responseCreator: response => response,
                 cosmosContainerCore: this.container,
-                partitionKey: null,
+                partitionKey: default(Cosmos.PartitionKey),
                 streamPayload: null,
                 cancellationToken: cancellationToken);
         }
@@ -198,7 +198,7 @@ namespace Microsoft.Azure.Cosmos
                 operationType: OperationType.ReadFeed,
                 requestOptions: options,
                 cosmosContainerCore: this.container,
-                partitionKey: null,
+                partitionKey: default(Cosmos.PartitionKey),
                 streamPayload: null,
                 requestEnricher: request =>
                 {

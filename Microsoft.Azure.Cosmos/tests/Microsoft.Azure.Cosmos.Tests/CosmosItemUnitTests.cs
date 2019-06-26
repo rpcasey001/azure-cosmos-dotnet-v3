@@ -261,7 +261,7 @@ namespace Microsoft.Azure.Cosmos.Tests
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
             {
                 await container.ReadItemAsync<dynamic>(
-                    partitionKey: null,
+                    partitionKey: default(Cosmos.PartitionKey),
                     id: testItem.id,
                     requestOptions: requestOptions);
             }, "ReadItemAsync should throw ArgumentNullException without the correct request option set.");
@@ -278,7 +278,7 @@ namespace Microsoft.Azure.Cosmos.Tests
             await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
             {
                 await container.DeleteItemAsync<dynamic>(
-                    partitionKey: null,
+                    partitionKey: default(Cosmos.PartitionKey),
                     id: testItem.id,
                     requestOptions: requestOptions);
             }, "DeleteItemAsync should throw ArgumentNullException without the correct request option set.");
@@ -289,7 +289,7 @@ namespace Microsoft.Azure.Cosmos.Tests
                 await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
                 {
                     await container.CreateItemStreamAsync(
-                        partitionKey: null,
+                        partitionKey: default(Cosmos.PartitionKey),
                         streamPayload: itemStream,
                         requestOptions: requestOptions);
                 }, "CreateItemAsync should throw ArgumentNullException without the correct request option set.");
@@ -297,7 +297,7 @@ namespace Microsoft.Azure.Cosmos.Tests
                 await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
                 {
                     await container.ReadItemStreamAsync(
-                        partitionKey: null,
+                        partitionKey: default(Cosmos.PartitionKey),
                         id: testItem.id,
                         requestOptions: requestOptions);
                 }, "ReadItemAsync should throw ArgumentNullException without the correct request option set.");
@@ -305,7 +305,7 @@ namespace Microsoft.Azure.Cosmos.Tests
                 await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
                 {
                     await container.UpsertItemStreamAsync(
-                        partitionKey: null,
+                        partitionKey: default(Cosmos.PartitionKey),
                         streamPayload: itemStream,
                         requestOptions: requestOptions);
                 }, "UpsertItemAsync should throw ArgumentNullException without the correct request option set.");
@@ -313,7 +313,7 @@ namespace Microsoft.Azure.Cosmos.Tests
                 await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
                 {
                     await container.ReplaceItemStreamAsync(
-                        partitionKey: null,
+                        partitionKey: default(Cosmos.PartitionKey),
                         id: testItem.id,
                         streamPayload: itemStream,
                         requestOptions: requestOptions);
@@ -322,7 +322,7 @@ namespace Microsoft.Azure.Cosmos.Tests
                 await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
                 {
                     await container.DeleteItemStreamAsync(
-                        partitionKey: null,
+                        partitionKey: default(Cosmos.PartitionKey),
                         id: testItem.id,
                         requestOptions: requestOptions);
                 }, "DeleteItemAsync should throw ArgumentNullException without the correct request option set.");

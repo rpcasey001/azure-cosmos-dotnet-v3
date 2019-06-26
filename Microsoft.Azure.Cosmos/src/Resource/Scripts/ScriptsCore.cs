@@ -439,7 +439,7 @@ namespace Microsoft.Azure.Cosmos.Scripts
                 resourceType: ResourceType.StoredProcedure,
                 operationType: operationType,
                 requestOptions: requestOptions,
-                partitionKey: null,
+                partitionKey: default(Cosmos.PartitionKey),
                 streamPayload: streamPayload,
                 cancellationToken: cancellationToken);
 
@@ -478,7 +478,7 @@ namespace Microsoft.Azure.Cosmos.Scripts
                 resourceType: ResourceType.Trigger,
                 operationType: operationType,
                 requestOptions: requestOptions,
-                partitionKey: null,
+                partitionKey: default(Cosmos.PartitionKey),
                 streamPayload: streamPayload,
                 cancellationToken: cancellationToken);
 
@@ -538,7 +538,7 @@ namespace Microsoft.Azure.Cosmos.Scripts
                 resourceType: ResourceType.UserDefinedFunction,
                 operationType: operationType,
                 requestOptions: requestOptions,
-                partitionKey: null,
+                partitionKey: default(Cosmos.PartitionKey),
                 streamPayload: streamPayload,
                 cancellationToken: cancellationToken);
 
@@ -561,7 +561,7 @@ namespace Microsoft.Azure.Cosmos.Scripts
                 operationType: OperationType.ReadFeed,
                 requestOptions: options,
                 cosmosContainerCore: null,
-                partitionKey: null,
+                partitionKey: default(Cosmos.PartitionKey),
                 streamPayload: null,
                 requestEnricher: request =>
                 {

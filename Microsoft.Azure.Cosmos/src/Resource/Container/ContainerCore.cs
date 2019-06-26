@@ -372,7 +372,7 @@ namespace Microsoft.Azure.Cosmos
               resourceType: resourceType,
               operationType: operationType,
               cosmosContainerCore: null,
-              partitionKey: null,
+              partitionKey: default(Cosmos.PartitionKey),
               streamPayload: streamPayload,
               requestOptions: requestOptions,
               requestEnricher: null,

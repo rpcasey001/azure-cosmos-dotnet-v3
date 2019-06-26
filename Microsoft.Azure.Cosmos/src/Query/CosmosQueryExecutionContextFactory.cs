@@ -350,7 +350,7 @@ namespace Microsoft.Azure.Cosmos.Query
             QueryRequestOptions queryRequestOptions)
         {
             List<PartitionKeyRange> targetRanges;
-            if (queryRequestOptions.PartitionKey != null)
+            if (!queryRequestOptions.PartitionKey.Equals(default(Cosmos.PartitionKey)))
             {
                 // Dis-ambiguate the NonePK if used 
                 PartitionKeyInternal partitionKeyInternal = null;
