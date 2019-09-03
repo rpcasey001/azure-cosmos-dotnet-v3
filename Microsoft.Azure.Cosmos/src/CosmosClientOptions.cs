@@ -141,7 +141,7 @@ namespace Microsoft.Azure.Cosmos
         /// </summary>
         /// <seealso cref="CosmosClientBuilder.AddCustomHandlers(RequestHandler[])"/>
         [JsonConverter(typeof(ClientOptionJsonConverter))]
-        public Collection<RequestHandler> CustomHandlers { get; }
+        internal Collection<RequestHandler> CustomHandlers { get; }
 
         /// <summary>
         /// Get or set the connection mode used by the client when connecting to the Azure Cosmos DB service.

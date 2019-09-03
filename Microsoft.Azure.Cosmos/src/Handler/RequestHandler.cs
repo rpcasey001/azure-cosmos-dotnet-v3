@@ -14,7 +14,7 @@ namespace Microsoft.Azure.Cosmos
     /// <remarks>
     /// Custom implementations are required to be stateless.
     /// </remarks>
-    public abstract class RequestHandler
+    internal abstract class RequestHandler
     {
         /// <summary>
         /// Defines a next handler to be called in the chain.

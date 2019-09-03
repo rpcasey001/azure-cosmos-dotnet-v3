@@ -262,7 +262,7 @@ namespace Microsoft.Azure.Cosmos.Fluent
         /// <returns>The current <see cref="CosmosClientBuilder"/>.</returns>
         /// <param name="customHandlers">A list of <see cref="RequestHandler"/> instaces to add to the pipeline.</param>
         /// <seealso cref="CosmosClientOptions.CustomHandlers"/>
-        public CosmosClientBuilder AddCustomHandlers(params RequestHandler[] customHandlers)
+        internal CosmosClientBuilder AddCustomHandlers(params RequestHandler[] customHandlers)
         {
             foreach (RequestHandler handler in customHandlers)
             {
