@@ -15,6 +15,8 @@ namespace Microsoft.Azure.Cosmos.Performance.Tests
     {
         static void Main(string[] args)
         {
+            ItemBenchmark it = new ItemBenchmark();
+
             CosmosDBConfiguration environmentConfiguration = ConfigurationService.Configuration;
             Console.WriteLine($"Starting benchmark and dropping results on {environmentConfiguration.ReportsPath}.");
             BenchmarkRunner.Run<ItemBenchmark>(new CustomBenchmarkConfiguration(environmentConfiguration));
