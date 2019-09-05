@@ -25,7 +25,7 @@ namespace Microsoft.Azure.Cosmos
     /// It is expected that direct property access is used for properties that will be read and used within the Azure Cosmos SDK pipeline, for example <see cref="RequestMessage.OperationType"/>.
     /// <see cref="RequestMessage.Properties"/> should be used for any other property that needs to be sent to the backend but will not be read nor used within the Azure Cosmos DB SDK pipeline.
     /// </remarks>
-    public class RequestMessage : Request
+    internal class RequestMessage : Request
     {
         /// <summary>
         /// Create a <see cref="RequestMessage"/>

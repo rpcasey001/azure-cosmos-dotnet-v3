@@ -34,7 +34,7 @@ namespace Microsoft.Azure.Cosmos
         /// <param name="errorMessage">The reason for failures if any.</param>
         public ResponseMessage(
             HttpStatusCode statusCode,
-            RequestMessage requestMessage = null,
+            Request requestMessage = null,
             string errorMessage = null)
         {
             if ((statusCode < 0) || ((int)statusCode > 999))
@@ -109,7 +109,7 @@ namespace Microsoft.Azure.Cosmos
         /// <summary>
         /// Gets the original request message
         /// </summary>
-        public virtual RequestMessage RequestMessage { get; internal set; }
+        public virtual Request RequestMessage { get; internal set; }
 
         /// <summary>
         /// Gets the cosmos diagnostic information for the current request to Azure Cosmos DB service
@@ -172,7 +172,13 @@ namespace Microsoft.Azure.Cosmos
 
         internal string GetResourceAddress()
         {
-            string resourceLink = this.RequestMessage?.RequestUri.OriginalString;
+            RequestMessage requestMessage = (RequestMessage)this.RequestMessage;
+            if (requestMessage == null)
+            {
+                throw new NotImplementedException();
+            }
+
+            string resourceLink = requestMessage?.RequestUri.OriginalString;
             if (PathsHelper.TryParsePathSegments(
                 resourceLink,
                 out bool isFeed,

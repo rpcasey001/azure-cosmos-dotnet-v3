@@ -240,7 +240,7 @@ namespace Microsoft.Azure.Cosmos
                     return QueryResponse.CreateFailure(
                         CosmosQueryResponseMessageHeaders.ConvertToQueryHeaders(cosmosResponseMessage.CosmosHeaders, resourceType, containerResourceId),
                         cosmosResponseMessage.StatusCode,
-                        cosmosResponseMessage.RequestMessage,
+                        (RequestMessage)cosmosResponseMessage.RequestMessage,
                         cosmosResponseMessage.ErrorMessage,
                         cosmosResponseMessage.Error);
                 }
