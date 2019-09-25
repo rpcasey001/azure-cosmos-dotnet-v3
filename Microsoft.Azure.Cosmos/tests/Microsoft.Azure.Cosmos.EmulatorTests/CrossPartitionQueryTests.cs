@@ -3331,8 +3331,7 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                         {
                             MaxItemCount = pageSize,
                             MaxBufferedItemCount = 1000,
-                            MaxConcurrency = 2,
-                            EnableCrossPartitionSkipTake = true,
+                            MaxConcurrency = 2
                         };
 
                         IEnumerable<JToken> expectedResults = documents.Select(document => document.propertyBag);
@@ -4234,7 +4233,6 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                         maxItemCount,
                         new QueryRequestOptions()
                         {
-                            EnableGroupBy = true,
                             MaxItemCount = maxItemCount,
                             MaxBufferedItemCount = 100,
                         });
@@ -4266,7 +4264,6 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                         maxItemCount,
                         new QueryRequestOptions()
                         {
-                            EnableGroupBy = true,
                         });
                     Assert.Fail("Expected an error when trying to drain a GROUP BY query with continuation tokens.");
                 }
@@ -4274,6 +4271,47 @@ namespace Microsoft.Azure.Cosmos.SDK.EmulatorTests
                 {
                 }
             }
+        }
+
+
+        [TestMethod]
+        [Owner("brchon")]
+        public async Task TestLargePrefixPartitionKeys()
+        {
+            await this.CreateIngestQueryDelete(
+                ConnectionModes.Direct | ConnectionModes.Gateway,
+                CollectionTypes.MultiPartition,
+                new List<string>() { },
+                this.TestLargePrefixPartitionKeys);
+        }
+
+        private async Task TestLargePrefixPartitionKeys(
+            Container container,
+            IEnumerable<Document> documents)
+        {
+            // There was a bug where the SDK could not handle collisions in the effective partition key.
+            // Normally this is pretty much impossible, since the epk is 128 bits, 
+            // but in HashV1 we only hash the first 100 bytes.
+            // This means any two strings with the same large prefix will collide. 
+            // This collision caused an assertion error (the query ranges were not sorted and non-overlapping (because there was a perfect overlap)).
+
+            ContainerProperties containerProperties = await container.ReadContainerAsync();
+            string partitionKey = containerProperties.PartitionKeyPath.Substring(1);
+            string largePrefix = new string('a', 1024);
+            string key1 = largePrefix + "abc";
+            string key2 = largePrefix + "xyz";
+
+            string serialQuery = $@"SELECT * FROM c WHERE c.{partitionKey} IN (""{key1}"", ""{key2}"")";
+
+            await CrossPartitionQueryTests.QueryWithContinuationTokens<JToken>(
+                container,
+                serialQuery);
+
+            string crossPartitionQuery = $"{serialQuery} ORDER BY c._ts";
+
+            await CrossPartitionQueryTests.QueryWithContinuationTokens<JToken>(
+                container,
+                crossPartitionQuery);
         }
 
         private sealed class Headers

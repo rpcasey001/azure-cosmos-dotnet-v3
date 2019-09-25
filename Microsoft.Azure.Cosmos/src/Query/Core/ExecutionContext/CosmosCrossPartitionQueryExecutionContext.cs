@@ -72,6 +72,7 @@ namespace Microsoft.Azure.Cosmos.Query
         private CosmosQueryContext queryContext;
 
         protected CosmosQueryClient queryClient;
+
         /// <summary>
         /// This stores all the query metrics which have been grouped by partition id.
         /// When a feed response is returned (which includes multiple partitions and potentially multiple continuations)
@@ -141,7 +142,6 @@ namespace Microsoft.Azure.Cosmos.Query
 
             this.queryContext = queryContext ?? throw new ArgumentNullException(nameof(queryContext));
             this.queryClient = queryContext.QueryClient ?? throw new ArgumentNullException(nameof(queryContext.QueryClient));
-            
             this.itemProducerForest = new PriorityQueue<ItemProducerTree>(moveNextComparer, isSynchronized: true);
             this.fetchPrioirtyFunction = fetchPrioirtyFunction;
             this.comparableTaskScheduler = new ComparableTaskScheduler(maxConcurrency.GetValueOrDefault(0));
