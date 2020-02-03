@@ -54,8 +54,8 @@
 
     public class Program
     {
-        private static readonly string databaseId = "samples";
-        private static readonly string containerId = "item-samples";
+        private static readonly string databaseId = "newdatabaseid";
+        private static readonly string containerId = "newcontainerid";
         private static readonly JsonSerializer Serializer = new JsonSerializer();
 
         //Reusable instance of ItemClient which represents the connection to a Cosmos endpoint
@@ -91,7 +91,7 @@
                 {
                     await Program.Initialize(client);
                     await Program.RunItemsDemo();
-                    await Program.Cleanup();
+                    //await Program.Cleanup();
                 }
             }
             catch (CosmosException cre)
@@ -120,13 +120,13 @@
         {
             await Program.RunBasicOperationsOnStronglyTypedObjects();
 
-            await Program.RunBasicOperationsOnDynamicObjects();
+            //await Program.RunBasicOperationsOnDynamicObjects();
 
-            await Program.UseETags();
+            //await Program.UseETags();
 
-            await Program.UseConsistencyLevels();
+            //await Program.UseConsistencyLevels();
 
-            await Program.AccessSystemDefinedProperties();
+            //await Program.AccessSystemDefinedProperties();
         }
         // </RunItemsDemo>
 
@@ -145,15 +145,15 @@
         {
             SalesOrder result = await Program.CreateItemsAsync();
 
-            await Program.ReadItemAsync();
+            //await Program.ReadItemAsync();
 
-            await Program.QueryItems();
+            //await Program.QueryItems();
 
-            await Program.ReplaceItemAsync(result);
+            //await Program.ReplaceItemAsync(result);
 
-            await Program.UpsertItemAsync();
+            //await Program.UpsertItemAsync();
 
-            await Program.DeleteItemAsync();
+            //await Program.DeleteItemAsync();
         }
         // </RunBasicOperationsOnStronglyTypedObjects>
 
