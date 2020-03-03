@@ -64,14 +64,14 @@
                 {
                     Console.WriteLine($"\n1. Listening for changes that happen after a Change Feed Processor is started.");
                     await Program.RunBasicChangeFeed("changefeed-basic", client);
-                    Console.WriteLine($"\n2. Listening for changes that happen after a certain point in time.");
-                    await Program.RunStartTimeChangeFeed("changefeed-time", client);
-                    Console.WriteLine($"\n3. Listening for changes that happen since the container was created.");
-                    await Program.RunStartFromBeginningChangeFeed("changefeed-beginning", client);
-                    Console.WriteLine($"\n4. Generate Estimator metrics to expose current Change Feed Processor progress.");
-                    await Program.RunEstimatorChangeFeed("changefeed-estimator", client);
-                    Console.WriteLine($"\n5. Code migration template from existing Change Feed Processor library V2.");
-                    await Program.RunMigrationSample("changefeed-migration", client, configuration);
+                    //Console.WriteLine($"\n2. Listening for changes that happen after a certain point in time.");
+                    //await Program.RunStartTimeChangeFeed("changefeed-time", client);
+                    //Console.WriteLine($"\n3. Listening for changes that happen since the container was created.");
+                    //await Program.RunStartFromBeginningChangeFeed("changefeed-beginning", client);
+                    //Console.WriteLine($"\n4. Generate Estimator metrics to expose current Change Feed Processor progress.");
+                    //await Program.RunEstimatorChangeFeed("changefeed-estimator", client);
+                    //Console.WriteLine($"\n5. Code migration template from existing Change Feed Processor library V2.");
+                    //await Program.RunMigrationSample("changefeed-migration", client, configuration);
                 }
             }
             finally
